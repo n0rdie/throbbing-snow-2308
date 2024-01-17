@@ -14,6 +14,7 @@ RSpec.describe "experiment index page",type: :feature do
         PassengerFlight.create(passenger: @anna, flight: @un_flight_1)
         PassengerFlight.create(passenger: @beth, flight: @un_flight_1)
         PassengerFlight.create(passenger: @carl, flight: @un_flight_2)
+        PassengerFlight.create(passenger: @anna, flight: @un_flight_2)
 
         @southwest = Airline.create(name: "SouthWest")
         @sw_flight_1 = @southwest.flights.create(number: "3")
@@ -34,7 +35,33 @@ RSpec.describe "experiment index page",type: :feature do
         expect(page).to have_content(@united.name)
         # And under each flight number I see the names of all that flight's passengers
         expect(@united.name).to appear_before(@carl.name)
+    end
 
-        save_and_open_page
+    it "User Story 2, Remove a Passenger from a Flight" do
+        # When I visit the flights index page
+        visit "/flights"
+        # Next to each passengers name
+        within "#flight-#{@sw_flight_2.number}" do
+            expect(@ella.name).to appear_before("Remove")
+        end
+        # I see a link or button to remove that passenger from that flight
+        within "#flight-#{@un_flight_2.number}" do
+            within "#passenger-#{@anna.name}" do
+                expect(page).to have_content(@anna.name)
+                expect(page).to have_button("Remove")
+                # When I click on that link/button
+                click_on("Remove")
+            end
+        end
+        # I'm returned to the flights index page
+        expect(page).to have_current_path("/flights")
+        # And I no longer see that passenger listed under that flight,
+        within "#flight-#{@un_flight_2.number}" do
+            expect(page).to_not have_content(@anna.name)
+        end
+        # And I still see the passenger listed under the other flights they were assigned to.
+        within "#flight-#{@un_flight_1.number}" do
+            expect(page).to have_content(@anna.name)
+        end
     end
 end
