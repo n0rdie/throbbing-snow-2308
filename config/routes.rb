@@ -3,7 +3,8 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   # root "articles#index"
-  get "/flights", to: "flights#index"
-  delete "/flights/:flight_id/passengers/:id", to: "flights/passengers#destroy"
-  get "/airlines/:id", to: "airlines#show"
+  resources :flights, only: :index do
+    resources :passengers, only: [:destroy], controller: "flights/passengers"
+  end
+  resources :airlines, only: :show
 end
