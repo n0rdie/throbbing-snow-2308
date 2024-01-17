@@ -34,5 +34,7 @@ RSpec.describe "experiment index page",type: :feature do
         expect(page).to have_content(@united.name)
         # And under each flight number I see the names of all that flight's passengers
         expect(@united.name).to appear_before(@carl.name)
+
+        save_and_open_page
     end
 end
